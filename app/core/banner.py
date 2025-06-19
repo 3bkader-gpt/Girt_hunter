@@ -21,7 +21,7 @@ class BannerManager:
         description = (
             f"Language: \033[1m{language}\033[0m | "
             f"Build: \033[92mv{app_info['version']}\033[0m | "
-            f"DEV: @{app_info['publisher']['contact']['telegram'][13:]}"
+            "DEV: @l_T_V_l"
         )
 
         centered_banner = "\n".join([line.center(80) for line in banner.splitlines()])
