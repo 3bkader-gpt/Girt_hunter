@@ -1,0 +1,53 @@
+# Gift Hunter Bot - Configuration
+# Non-sensitive settings (safe to commit to Git)
+
+# Telegram client behavior
+telegram:
+  interval_seconds: 10      # Polling interval (minimum: 5)
+  max_retries: 3            # Retry attempts per purchase
+  retry_delay_seconds: 2.0  # Initial retry delay
+
+# Notification settings
+notifications:
+  channel_id: -100          # Channel ID for notifications (-100 to disable)
+  types:
+    purchase_success: true
+    purchase_partial: true
+    balance_low: true
+    errors: true
+    daily_summary: true
+  low_balance_threshold: 1000  # Stars
+
+# Gift ranges configuration
+gifts:
+  ranges:
+    - name: "Budget Range"
+      min_price: 1
+      max_price: 500
+      supply_limit: 500000
+      quantity_per_recipient: 1
+      recipients:
+        - "@username"      # Replace with actual usernames
+        # - 123456789      # Or user IDs
+      upgradable_only: false
+      
+    - name: "Premium Range"
+      min_price: 1000
+      max_price: 5000
+      supply_limit: 10000
+      quantity_per_recipient: 2
+      recipients:
+        - "@vip_user"
+      upgradable_only: true
+      
+  prioritize_low_supply: true
+  blacklist_gifts: []       # Gift IDs to skip
+  blacklist_recipients: []  # User IDs to never send to
+
+# Budget management
+budget:
+  daily_limit: 0            # Max daily spend (0 = unlimited)
+  reserve_balance: 0        # Minimum balance to keep
+
+# Interface language: EN | RU | AR
+language: "EN"
