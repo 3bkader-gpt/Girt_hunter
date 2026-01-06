@@ -1,142 +1,247 @@
-# Telegram Gifts Buyer
+<div align="center">
 
-<img src="https://github.com/user-attachments/assets/40f64ac9-ff84-4b31-85fd-b6ab01116bdb" alt="Program Preview" width="100%" />
+# 🎁 Gift Hunter Bot
 
-Automated Telegram userbot for purchasing gifts with smart prioritization, multiple recipients, and intelligent balance
-management.
+### *Automated Telegram Gifts Buyer — Smart, Secure, Observable*
 
-> 🌐 [Русская версия](README-RU.md)
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=Gift%20Hunter&fontSize=42&fontColor=fff&animation=twinkling&fontAlignY=32"/>
+
+**Automatically snipe rare Telegram gifts before they sell out!**
+
+[Features](#-features) •
+[Quick Start](#-quick-start) •
+[Configuration](#-configuration) •
+[Docker](#-docker) •
+[API](#-api)
+
+</div>
+
+---
 
 ## ✨ Features
 
-- **🤖 Automated Monitoring**: Continuously scans for new gifts matching your criteria
-- **🎯 Smart Prioritization**: Prioritizes rare gifts (low supply) within your price ranges
-- **👥 Multi-Recipient**: Send different quantities to multiple users/channels per price range
-- **💰 Balance Management**: Makes partial purchases when balance is insufficient
-- **📊 Detailed Notifications**: Purchase confirmations, balance alerts, and processing summaries
-- **🔧 Flexible Setup**: Simple configuration format for price ranges and recipients
-- **🌍 Multi-Language**: English and Russian interface
+<table>
+<tr>
+<td width="50%">
 
-## 🚀 Installation
+### 🎯 Smart Purchasing
+- **Auto-detection** of new gifts
+- **Priority system** for rare gifts
+- **Multi-recipient** support
+- **Partial purchases** when low balance
+
+</td>
+<td width="50%">
+
+### 🔒 Security First
+- **Environment variables** for secrets
+- **No hardcoded credentials**
+- **Non-root Docker** container
+- **Encrypted sessions**
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📊 Full Observability
+- **Prometheus metrics** (`/metrics`)
+- **Health endpoints** (`/health`)
+- **Structured JSON logs**
+- **Real-time notifications**
+
+</td>
+<td width="50%">
+
+### ⚡ High Performance
+- **Async architecture**
+- **SQLite storage**
+- **Rate limit handling**
+- **Auto-reconnection**
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.12+ or Docker
+- Telegram API credentials from [my.telegram.org](https://my.telegram.org/apps)
+
+### Installation
 
 ```bash
-git clone https://github.com/bohd4nx/Gifts-Buyer.git
-cd Gifts-Buyer
-pip install -r requirements.txt
+# Clone the repository
+git clone https://github.com/3bkader-gpt/Girt_hunter.git
+cd Girt_hunter
+
+# Create environment file
+cp .env.example .env
+# Edit .env with your credentials
+
+# Install dependencies
+pip install -e .
+
+# Run the bot
+python -m src.main
 ```
 
-Edit `config.ini` with your settings and run:
+---
+
+## 🐳 Docker
+
+The recommended way to run Gift Hunter in production:
 
 ```bash
-python main.py
-```
-
-## 🐳 Docker Usage
-
-You can run the bot via Docker. The process includes one-time Telegram authorization and background launch.
-
-### 1. Build the Docker image
-
-```bash
-docker compose build
-```
-
-### 2. Run the container for Telegram login (one-time setup)
-
-```bash
-docker compose run --rm gift-buyer
-```
-
-Follow the prompts to complete Telegram authorization. Your session will be saved in the `./data/` directory.
-
-> ℹ️ This step is only required once — until your session expires or you change accounts.
-
-### 3. Start the bot in background mode
-
-```bash
+# Build and start
 docker compose up -d
-```
 
-The bot will start using the saved session and configuration from `config.ini`.
+# View logs
+docker compose logs -f
 
-### 4. Stop the bot (when needed)
-
-```bash
+# Stop
 docker compose down
 ```
 
+### Endpoints
+| Endpoint | Port | Description |
+|----------|------|-------------|
+| `/health` | 8080 | Health check status |
+| `/metrics` | 9090 | Prometheus metrics |
+
+---
+
 ## ⚙️ Configuration
 
-### Basic Settings
+### Environment Variables (`.env`)
 
-```ini
-[Telegram]
-API_ID = your_api_id                   # From https://my.telegram.org/apps
-API_HASH = your_api_hash               # From https://my.telegram.org/apps
-PHONE_NUMBER = +1234567890             # Your phone number
-CHANNEL_ID = -100xxxxxxxxx             # Notifications channel (-100 to disable)
-
-[Bot]
-INTERVAL = 10                          # Check interval in seconds
-LANGUAGE = EN                          # Interface language (EN/RU)
-
-[Gifts]
-# Format: price_range: supply_limit x quantity: recipients
-GIFT_RANGES = 1-1000: 500000 x 1: @user1, 123456; 1001-5000: 100000 x 2: @channel
-
-PURCHASE_ONLY_UPGRADABLE_GIFTS = False # Buy only upgradable gifts
-PRIORITIZE_LOW_SUPPLY = True           # Prioritize rare gifts
+```env
+TELEGRAM_API_ID=your_api_id
+TELEGRAM_API_HASH=your_api_hash
+TELEGRAM_PHONE_NUMBER=+1234567890
 ```
 
-### Gift Ranges Format
+### Application Config (`config.yaml`)
 
-**Format**: multiple ranges separated by `;`  
-Each range: `min_price-max_price: supply_limit x quantity: recipients`
+```yaml
+gifts:
+  ranges:
+    - name: "Budget Gifts"
+      min_price: 1
+      max_price: 500
+      supply_limit: 500000
+      recipients:
+        - "@username"
+  prioritize_low_supply: true
 
-**Examples**:
-
-- `1-1000: 500000 x 1: @johndoe, 123456789` - Cheap gifts, 1 copy each
-- `1001-5000: 100000 x 2: @channel, @user` - Mid-range, 2 copies each
-- `5001-50000: 50000 x 5: 987654321` - Expensive gifts, 5 copies
-
-**As a result**:  
-`GIFT_RANGES = 1-1000: 500000 x 1: @johndoe, 123456789; 1001-5000: 100000 x 2: @channel, @user; 5001-50000: 50000 x 5: 987654321`
-
-**Recipients can be**:
-
-- Usernames: `@username`
-- User IDs: `123456789`
-- Channel names: `@channelname`
-
-### How It Works
-
-1. **Monitoring**: Bot checks for new gifts every `INTERVAL` seconds
-2. **Filtering**: Only processes gifts matching your price ranges and supply limits
-3. **Prioritization**: If `PRIORITIZE_LOW_SUPPLY = True`, processes rarest gifts first
-4. **Purchasing**: Buys specified quantity for each recipient in the range
-5. **Balance Check**: Makes partial purchases if balance is insufficient
-
-## 💰 Smart Balance Management
-
-The bot calculates how many gifts it can afford before attempting purchase:
-
-```
-Example:
-- Gift costs 1500⭐, want to buy 4 copies
-- Current balance: 4500⭐
-- Result: Buys 3 copies, reports missing 1500⭐ for the last one
+notifications:
+  channel_id: -1001234567890
 ```
 
-## 📝 Tips
+<details>
+<summary>📋 Full Configuration Options</summary>
 
-- Keep balance 2-3x higher than your most expensive range
-- Use multiple ranges for different strategies
-- Enable notifications to monitor activity
-- Test with small ranges first
-- Run on VPS for 24/7 operation
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `telegram.interval_seconds` | int | 10 | Polling interval |
+| `telegram.max_retries` | int | 3 | Purchase retry attempts |
+| `notifications.channel_id` | int | -100 | Notification channel |
+| `gifts.prioritize_low_supply` | bool | true | Rare gifts first |
+| `budget.daily_limit` | int | 0 | Max daily spend (0=unlimited) |
+| `budget.reserve_balance` | int | 0 | Minimum balance to keep |
+
+</details>
+
+---
+
+## 📁 Project Structure
+
+```
+gift_hunter/
+├── src/
+│   ├── config/          # Pydantic settings
+│   ├── core/            # Telegram client, monitor, purchase engine
+│   ├── storage/         # SQLite database layer
+│   ├── observability/   # Logging, metrics, health
+│   └── notifications/   # Telegram notifications
+├── tests/               # Unit tests
+├── scripts/             # Migration utilities
+├── config.yaml          # Application config
+├── .env.example         # Environment template
+└── docker-compose.yml   # Docker deployment
+```
+
+---
+
+## 📈 Metrics
+
+Gift Hunter exposes Prometheus metrics for monitoring:
+
+```
+# Counters
+gift_hunter_gifts_checked_total
+gift_hunter_gifts_purchased_total
+
+# Gauges  
+gift_hunter_balance_stars
+gift_hunter_monitoring_active
+
+# Histograms
+gift_hunter_purchase_duration_seconds
+```
+
+---
+
+## 🔄 Migration from v1.0
+
+```bash
+# Backup your data
+cp -r data data.backup
+
+# Run migration script
+python scripts/migrate_history.py
+
+# Rebuild Docker
+docker compose build --no-cache
+docker compose up -d
+```
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 <div align="center">
-    <h4>🚀 Built with ❤️ by <a href="https://t.me/bohd4nx">Bohdan</a> • <a href="https://app.tonkeeper.com/transfer/UQBUAa7KCx1ifmoEy6lF7j-822Dm_cE1j9SR7UWteu3jzukV?amount=0&text=Thanks%20for%20Gifts-Buyer">Donate</a></h4>
+
+## 👨‍💻 Author
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=24&height=100&section=footer"/>
+
+<a href="https://github.com/3bkader-gpt">
+  <img src="https://img.shields.io/badge/Crafted%20with%20%E2%9D%A4%EF%B8%8F%20by-Mohamed%20Omar-FF6B6B?style=for-the-badge&labelColor=1a1a2e"/>
+</a>
+
+<br/>
+
+**Mohamed Omar** © 2026
+
+<sub>
+🌟 Star this repo if you find it useful! 🌟
+</sub>
+
+<br/><br/>
+
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat-square&logo=github)](https://github.com/3bkader-gpt)
+
 </div>
