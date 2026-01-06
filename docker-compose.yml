@@ -1,8 +1,70 @@
+# Gift Hunter Bot v2.0 - Docker Compose Configuration
+
 services:
-  gift-buyer:
-    build: .
-    container_name: gift-buyer
-    restart: always
+  gift-hunter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gift-hunter
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Volumes
     volumes:
-      - ./data:/app/data
-      - ./config.ini:/app/config.ini
+      # Data persistence (sessions, database)
+      - ./data:/app/data:rw
+      # Config file (read-only)
+      - ./config.yaml:/app/config.yaml:ro
+
+    # Temporary filesystem for /tmp
+    tmpfs:
+      - /tmp:size=64M
+
+    # Environment variables from .env file
+    env_file:
+      - .env
+
+    # Additional environment overrides
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - METRICS_PORT=9090
+      - HEALTH_PORT=8080
+
+    # Port mappings
+    ports:
+      - "8080:8080" # Health check endpoint
+      - "9090:9090" # Prometheus metrics
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service"
+
+    # Labels for container identification
+    labels:
+      - "app=gift-hunter"
+      - "version=2.0.0"
+
+    # Health check (overrides Dockerfile HEALTHCHECK)
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
